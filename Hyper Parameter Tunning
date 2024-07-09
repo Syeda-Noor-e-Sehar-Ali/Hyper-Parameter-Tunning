@@ -1,0 +1,98 @@
+from sklearn.datasets import load_digits
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+
+digits = load_digits()
+X_train, X_test, y_train, y_test = train_test_split(digits.data,digits.target, test_size=0.2)
+
+model_params = {
+    'random_forest': {
+        'model': RandomForestClassifier(),
+        'params' : {
+            'n_estimators': [1,5,10]
+        }
+    },
+    'KNN' : {
+        'model': KNeighborsClassifier(),
+        'params': {
+            'n_neighbors': [3, 5, 7]
+        }
+    }
+}
+
+scores = []
+
+for model_name, mp in model_params.items():
+    clf =  GridSearchCV(mp['model'], mp['params'], cv=5, return_train_score=False)
+    clf.fit(digits.data, digits.target)
+    scores.append({
+        'model': model_name,
+        'best_score': clf.best_score_,
+        'best_params': clf.best_params_
+    })
+
+df = pd.DataFrame(scores,columns=['model','best_score','best_params'])
+df
+
+#Based on above, I can conclude that KNN with n-neighbors:3 is the best model for solving my problem of Digits classification
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier
+
+df=pd.read_csv('/content/drive/MyDrive/Semester projects/Semester 5/Semester 5 AI/AI Lab 7/Tasks/HousingData.csv')
+
+median_crim = df.CRIM.median()
+median_crim
+df.CRIM =df.CRIM.fillna(median_crim)
+median_age= df.AGE.median()
+median_age
+df.AGE = df.AGE.fillna(median_age)
+x=df[['RM','CRIM']]
+y=df['AGE']
+X_train, X_test, y_train, y_test = train_test_split(x,y, test_size=0.2)
+
+
+model_params = {
+    'random_forest': {
+        'model': RandomForestClassifier(),
+        'params' : {
+            'n_estimators': [1,5,10]
+        }
+    },
+    'Linear Regression' : {
+        'model': LinearRegression(),
+        'params': {
+            'c': [2,7,8]
+        }
+    },
+
+    'Descion Tree' : {
+        'model': DecisionTreeClassifier(),
+        'params': {
+            'c': [4,7,42]
+        }
+    }
+}
+scores = []
+
+for model_name, mp in model_params.items():
+    clf =  GridSearchCV(mp['model'], mp['params'], cv=5, return_train_score=False)
+    clf.fit(x,y)
+    scores.append({
+        'model': model_name,
+        'best_score': clf.best_score_,
+        'best_params': clf.best_params_
+    })
+
+df = pd.DataFrame(scores,columns=['model','best_score','best_params'])
+df
+
